@@ -86,13 +86,13 @@ export function createQuizConfig(type: string): QuizConfig {
 export const defaultQuizConfig: QuizConfig = {
   categories: {
     "Basisfragen": {
-      questionsCount: 15,
-      passingThreshold: 11,
+      questionsCount: 7,
+      passingThreshold: 5,
     },
     "Spezifische Fragen See": {
-      questionsCount: 15,
-      passingThreshold: 11,
+      questionsCount: 23,
+      passingThreshold: 20,
     },
   },
-  totalPassingThreshold: 22,
+  totalPassingThreshold: 25,
 };
