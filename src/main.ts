@@ -145,7 +145,7 @@ function renderQuestion(
 
   const displayImages = question.image || [];
   for (const img of displayImages) {
-    html += `<img class="question-image" src="/images/${img}" alt="Question image" />`;
+    html += `<img class="question-image" src="${img}" alt="Question image" />`;
   }
 
   html += `<div class="answers">`;
@@ -163,7 +163,7 @@ function renderQuestion(
     html += `<span class="answer-text">${answer.text}</span>`;
     if (answer.images && answer.images.length > 0) {
       for (const img of answer.images) {
-        html += `<img class="answer-image" src="/images/${img}" alt="Answer image" />`;
+        html += `<img class="answer-image" src="${img}" alt="Answer image" />`;
       }
     }
     html += `</button>`;
