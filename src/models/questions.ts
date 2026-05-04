@@ -5,6 +5,7 @@ export interface Answer {
 }
 
 export interface Question {
+  number: number;
   question: string;
   answers: Answer[];
   image?: string[];
@@ -19,3 +20,4 @@ export interface Category {
 export interface QuestionsJson {
   categories: Category;
 }
+

@@ -48,7 +48,7 @@ function shuffle<T>(array: T[]): T[] {
 }
 
 function selectQuestions(questions: Question[], count: number): Question[] {
-  return shuffle(questions).slice(0, count);
+  return shouldShuffle() ? shuffle(questions).slice(0, count) : questions;
 }
 
 function shuffleAnswers(question: Question): Question {
@@ -56,6 +56,11 @@ function shuffleAnswers(question: Question): Question {
     ...question,
     answers: shuffle(question.answers),
   };
+}
+
+function shouldShuffle(): boolean {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("quiz") !== "all";
 }
 
 function initQuiz(config: QuizConfig): QuizState {
@@ -69,45 +74,19 @@ function initQuiz(config: QuizConfig): QuizState {
     lastSelectedIndex: -1,
   };
 
-  if (config.title) {
-    const categoryName = Object.keys(config.categories)[0];
-    const categoryConfig = config.categories[categoryName];
-    const data = fragenData as QuestionsJson;
-    const allQuestions: Question[] = [];
-    for (const cat in data.categories) {
-      if (config.title === "Fragen mit Bildern") {
-        allQuestions.push(
-          ...data.categories[cat].filter((q) => q.image && q.image.length > 0),
-        );
-      } else if (config.title === "Fragen mit Antwort-Bildern") {
-        allQuestions.push(
-          ...data.categories[cat].filter((q) =>
-            q.answers.some((a) => a.images && a.images.length > 0),
-          ),
-        );
-      }
-    }
-    const selected = selectQuestions(
-      allQuestions,
-      categoryConfig.questionsCount,
-    );
-    state.questions = selected.map(shuffleAnswers);
-    state.categoryScores[categoryName] = 0;
-  } else {
-    for (const [categoryName, categoryConfig] of Object.entries(
-      config.categories,
-    )) {
-      const categoryQuestions = (fragenData as QuestionsJson).categories[
-        categoryName
-      ];
-      if (categoryQuestions) {
-        const selected = selectQuestions(
-          categoryQuestions,
-          categoryConfig.questionsCount,
-        );
-        state.questions.push(...selected.map(shuffleAnswers));
-        state.categoryScores[categoryName] = 0;
-      }
+  for (const [categoryName, categoryConfig] of Object.entries(
+    config.categories,
+  )) {
+    const categoryQuestions = (fragenData as QuestionsJson).categories[
+      categoryName
+    ];
+    if (categoryQuestions) {
+      const selected = selectQuestions(
+        categoryQuestions,
+        categoryConfig.questionsCount,
+      );
+      state.questions.push(...selected.map(shuffleAnswers));
+      state.categoryScores[categoryName] = 0;
     }
   }
 
@@ -118,6 +97,30 @@ function initQuiz(config: QuizConfig): QuizState {
   return state;
 }
 
+function getCurrentQuestionNumber(): number | undefined {
+  const params = new URLSearchParams(window.location.search);
+  const currentQuestionNumber = params.get("questionNumber");
+  if (!currentQuestionNumber) return;
+  try {
+    return parseInt(currentQuestionNumber);
+  } catch (e) {
+    return;
+  }
+}
+
+function updateStateFromURLParams(state: QuizState): QuizState {
+  const isAllQuestionsQuiz = getQuizType() == "all";
+  if (!isAllQuestionsQuiz) {
+    return state;
+  }
+  const currentQuestionNumber = getCurrentQuestionNumber();
+  if (!currentQuestionNumber) {
+    return state;
+  }
+  const currentQuestionIndex = currentQuestionNumber - 1;
+  return { ...state, currentQuestionIndex };
+}
+
 function renderQuestion(
   state: QuizState,
   config: QuizConfig,
@@ -125,6 +128,7 @@ function renderQuestion(
   selectedIndex: number = -1,
   confirmBeforeSubmitting: boolean = false,
 ): string {
+  state = updateStateFromURLParams(state);
   if (state.currentQuestionIndex >= state.questions.length) {
     return renderResults(state, config);
   }
@@ -143,7 +147,7 @@ function renderQuestion(
   let html = `<h2>${state.currentCategory} (${categoryIndex + 1}/${categoryConfig.questionsCount})</h2>`;
   html += `<p class="question">${question.question}</p>`;
 
-  const displayImages = question.image || [];
+  const displayImages = question.images || [];
   for (const img of displayImages) {
     html += `<img class="question-image" src="${img}" alt="Question image" />`;
   }
@@ -192,7 +196,7 @@ function getCategoryForQuestion(
 ): string {
   let questionCount = 0;
   for (const [categoryName, categoryConfig] of Object.entries(
-    defaultQuizConfig.categories,
+    getConfig().categories,
   )) {
     const nextCount = questionCount + categoryConfig.questionsCount;
     if (questionIndex < nextCount) {
@@ -244,6 +248,13 @@ function renderSettingsModal(settings: AppSettings): string {
   `;
 }
 
+function getConfig() {
+  const quizType = getQuizType();
+  const config =
+    quizType === "default" ? defaultQuizConfig : createQuizConfig(quizType);
+  return config;
+}
+
 function getQuizType(): string {
   const params = new URLSearchParams(window.location.search);
   return params.get("quiz") || "default";
@@ -260,9 +271,7 @@ function renderApp() {
   modalDiv.innerHTML = renderSettingsModal(settings);
   document.body.appendChild(modalDiv);
 
-  const quizType = getQuizType();
-  const config =
-    quizType === "default" ? defaultQuizConfig : createQuizConfig(quizType);
+  const config = getConfig();
   const state = initQuiz(config);
 
   function openSettings() {
@@ -316,6 +325,29 @@ function renderApp() {
 
     render();
   }
+  function updateSearchParamsFromQuestionIndex() {
+    const currentQuestionNumber = getCurrentQuestionNumber();
+    if (!currentQuestionNumber) return;
+    const urlString = window.location.href;
+    const updatedUrlString = urlString.replace(
+      /questionNumber=\d+/g,
+      `questionNumber=${currentQuestionNumber + 1}`,
+    );
+    window.location.href = updatedUrlString;
+  }
+
+  function nextQuestion(state: QuizState) {
+    state.currentQuestionIndex++;
+    state.showFeedback = false;
+
+    if (state.currentQuestionIndex < state.questions.length) {
+      const nextCat = getCategoryForQuestion(state, state.currentQuestionIndex);
+      if (nextCat !== state.currentCategory) {
+        state.currentCategory = nextCat;
+      }
+    }
+    updateSearchParamsFromQuestionIndex();
+  }
 
   function render() {
     const headerButtons = `<div class="header"><button id="settings-btn">Settings</button></div>`;
@@ -329,36 +361,14 @@ function renderApp() {
       if (settings.autoContinue) {
         setTimeout(() => {
           if (state.currentQuestionIndex < state.questions.length) {
-            state.currentQuestionIndex++;
-            state.showFeedback = false;
-
-            const nextCat = getCategoryForQuestion(
-              state,
-              state.currentQuestionIndex,
-            );
-            if (nextCat !== state.currentCategory) {
-              state.currentCategory = nextCat;
-            }
-
+            nextQuestion(state);
             render();
           }
         }, 500);
       }
 
       document.getElementById("next-btn")?.addEventListener("click", () => {
-        state.currentQuestionIndex++;
-        state.showFeedback = false;
-
-        if (state.currentQuestionIndex < state.questions.length) {
-          const nextCat = getCategoryForQuestion(
-            state,
-            state.currentQuestionIndex,
-          );
-          if (nextCat !== state.currentCategory) {
-            state.currentCategory = nextCat;
-          }
-        }
-
+        nextQuestion(state);
         render();
       });
     } else if (state.currentQuestionIndex >= state.questions.length) {
@@ -450,4 +460,3 @@ function renderApp() {
 }
 
 document.addEventListener("DOMContentLoaded", renderApp);
-

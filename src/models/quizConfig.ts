@@ -1,5 +1,5 @@
-import fragenData from '../data/fragen.json';
-import { QuestionsJson, Question } from './questions';
+import fragenData from "../data/fragen.json";
+import { QuestionsJson, Question } from "./questions";
 
 export interface CategoryConfig {
   questionsCount: number;
@@ -30,7 +30,7 @@ function getQuestionsWithAnswerImages(): Question[] {
   const result: Question[] = [];
   for (const cat in data.categories) {
     for (const q of data.categories[cat]) {
-      if (q.answers.some(a => a.images && a.images.length > 0)) {
+      if (q.answers.some((a) => a.images && a.images.length > 0)) {
         result.push(q);
       }
     }
@@ -50,23 +50,26 @@ function shuffle<T>(array: T[]): T[] {
 function shuffleAnswers(question: Question): Question {
   return {
     ...question,
-    answers: shuffle(question.answers)
+    answers: shuffle(question.answers),
   };
 }
 
 export function createQuizConfig(type: string): QuizConfig {
   let questions: Question[] = [];
-  let title = '';
+  let title = "";
 
   switch (type) {
-    case 'question-images':
+    case "question-images":
       questions = getQuestionsWithQuestionImages().map(shuffleAnswers);
-      title = 'Fragen mit Bildern';
+      title = "Fragen mit Bildern";
       break;
-    case 'answer-images':
+    case "answer-images":
       questions = getQuestionsWithAnswerImages().map(shuffleAnswers);
-      title = 'Fragen mit Antwort-Bildern';
+      title = "Fragen mit Antwort-Bildern";
       break;
+    case "all":
+      title = "Alle Fragen";
+      return allQuestionsConfig;
     default:
       return defaultQuizConfig;
   }
@@ -85,14 +88,28 @@ export function createQuizConfig(type: string): QuizConfig {
 
 export const defaultQuizConfig: QuizConfig = {
   categories: {
-    "Basisfragen": {
-      questionsCount: 15,
-      passingThreshold: 11,
+    Basisfragen: {
+      questionsCount: 7,
+      passingThreshold: 5,
     },
     "Spezifische Fragen See": {
-      questionsCount: 15,
-      passingThreshold: 11,
+      questionsCount: 23,
+      passingThreshold: 18,
     },
   },
-  totalPassingThreshold: 22,
+  totalPassingThreshold: 23,
+};
+
+export const allQuestionsConfig: QuizConfig = {
+  categories: {
+    Basisfragen: {
+      questionsCount: 72,
+      passingThreshold: 72,
+    },
+    "Spezifische Fragen See": {
+      questionsCount: 213,
+      passingThreshold: 213,
+    },
+  },
+  totalPassingThreshold: 285,
 };

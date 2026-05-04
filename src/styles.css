@@ -123,6 +123,7 @@ body {
   margin-bottom: 20px;
   display: block;
   border: 1px solid #ddd;
+  padding: 4px;
 }
 
 .answers {
