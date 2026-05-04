@@ -2687,7 +2687,7 @@
       },
       {
         "number": 116,
-        "question": "Sie hören bei verminderter Sicht mindestens alle zwei Minuten einen langen Ton mit der Pfeife (―). Welches Fahrzeug gibt dieses Signal?",
+        "question": "Sie hören bei verminderter Sicht mindestens alle zwei Minuten einen langen Ton mit der Pfeife (━). Welches Fahrzeug gibt dieses Signal?",
         "answers": [
           {
             "text": "Ein Maschinenfahrzeug, das Fahrt durchs Wasser macht.",
@@ -2705,10 +2705,6 @@
             "text": "Ein vor Anker liegendes Fahrzeug von 100 und mehr Meter Länge.",
             "isCorrect": false
           }
-        ],
-
-        "images": [
-          "images/116.png"
         ]
       },
       {
@@ -2731,10 +2727,6 @@
             "text": "Ein vor Anker liegendes Fahrzeug von 100 und mehr Meter Länge.",
             "isCorrect": false
           }
-        ],
-
-        "images": [
-          "images/117.png"
         ]
       },
       {
