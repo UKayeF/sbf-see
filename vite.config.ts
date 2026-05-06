@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import preact from '@preact/preset-vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
@@ -13,6 +14,7 @@ export default defineConfig({
     origin: 'http://localhost:5173'
   },
   plugins: [
+    preact(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt'],
