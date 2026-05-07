@@ -87,7 +87,10 @@ export function App() {
         answers: [
           ...currentState.answers,
           {
+            questionIndex: currentState.currentQuestionIndex,
             question: question.question,
+            images: question.images,
+            answers: question.answers.map((a) => ({ text: a.text, isCorrect: a.isCorrect, images: a.images })),
             selected: selectedIndex,
             correct: isCorrect,
           },
@@ -131,12 +134,43 @@ export function App() {
     setState((currentState) => resetCurrentQuiz(currentState));
   }
 
+  function retryWrongAnswers() {
+    setPendingIndex(null);
+    setState((currentState) => {
+      const wrongAnswers = currentState.answers.filter((a) => !a.correct);
+      const wrongQuestionIndices = wrongAnswers.map((a) => a.questionIndex);
+      const filteredQuestions = currentState.questions.filter((_, idx) =>
+        wrongQuestionIndices.includes(idx),
+      );
+
+      const categoryScores = Object.fromEntries(
+        Object.keys(currentState.categoryScores).map((category) => [category, 0]),
+      );
+
+      return {
+        ...currentState,
+        questions: filteredQuestions,
+        currentCategory: Object.keys(categoryScores)[0] || currentState.currentCategory,
+        currentQuestionIndex: 0,
+        answers: [],
+        categoryScores,
+        showFeedback: false,
+        lastSelectedIndex: -1,
+      };
+    });
+  }
+
   function startOver() {
     location.reload();
   }
 
   useEffect(() => {
     if (!state.showFeedback || !settings.autoContinue) return;
+
+    const lastAnswer = state.answers[state.answers.length - 1];
+    const shouldAutoContinue = lastAnswer?.correct || settings.autoContinueForWrongAnswers;
+
+    if (!shouldAutoContinue) return;
 
     const timeoutId = window.setTimeout(() => {
       if (state.currentQuestionIndex < state.questions.length) {
@@ -148,8 +182,9 @@ export function App() {
   }, [
     state.showFeedback,
     state.currentQuestionIndex,
-    state.questions.length,
+    state.answers.length,
     settings.autoContinue,
+    settings.autoContinueForWrongAnswers,
   ]);
 
   return (
@@ -160,6 +195,7 @@ export function App() {
           config={config}
           state={state}
           onRestart={restartQuiz}
+          onRetryWrong={retryWrongAnswers}
           onStartOver={startOver}
         />
       ) : (

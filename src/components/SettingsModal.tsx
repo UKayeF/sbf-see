@@ -35,6 +35,20 @@ export function SettingsModal({
         <label>
           <input
             type="checkbox"
+            id="auto-continue-wrong-answers"
+            checked={draftSettings.autoContinueForWrongAnswers}
+            onChange={(event) =>
+              setDraftSettings({
+                ...draftSettings,
+                autoContinueForWrongAnswers: event.currentTarget.checked,
+              })
+            }
+          />
+          Auto continue even for wrong answers
+        </label>
+        <label>
+          <input
+            type="checkbox"
             id="confirm-before-submitting"
             checked={draftSettings.confirmBeforeSubmitting}
             onChange={(event) =>

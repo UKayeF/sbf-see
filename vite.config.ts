@@ -23,6 +23,7 @@ export default defineConfig({
         name: 'sbf-see-quiz',
         short_name: 'sbf-see-quiz',
         description: 'sbf-see-quiz quiz application',
+        lang: 'de',
         theme_color: '#1a1a2e',
         background_color: '#1a1a2e',
         display: 'standalone',

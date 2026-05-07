@@ -1,10 +1,12 @@
 export interface AppSettings {
   autoContinue: boolean;
+  autoContinueForWrongAnswers: boolean;
   confirmBeforeSubmitting: boolean;
 }
 
 export const defaultSettings: AppSettings = {
   autoContinue: true,
+  autoContinueForWrongAnswers: false,
   confirmBeforeSubmitting: false,
 };
 
