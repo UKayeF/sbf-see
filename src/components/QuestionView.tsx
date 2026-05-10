@@ -34,12 +34,16 @@ export function QuestionView({
     questionsCount: state.questions.length,
     passingThreshold: 0,
   };
+  const actualCategoryQuestions = state.questionCategories.filter(
+    (category) => category === state.currentCategory,
+  ).length;
+  const questionsCount = actualCategoryQuestions || categoryConfig.questionsCount;
 
   return (
     <>
       <h2>
         {state.currentCategory} ({categoryIndex + 1}/
-        {categoryConfig.questionsCount})
+        {questionsCount})
       </h2>
       <p class="question">{question.question}</p>
 

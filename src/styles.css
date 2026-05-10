@@ -78,6 +78,83 @@ body {
   background: var(--bg-button-hover);
 }
 
+.main-menu h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+}
+
+.menu-intro {
+  color: var(--text-secondary);
+  margin: 0 0 20px;
+}
+
+.menu-options {
+  display: grid;
+  gap: 12px;
+}
+
+.menu-option {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-app);
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  display: grid;
+  gap: 5px;
+}
+
+.menu-option:hover {
+  border-color: var(--color-selected-border);
+  background: var(--color-selected-bg);
+}
+
+.menu-option-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.menu-option-text {
+  color: var(--text-secondary);
+}
+
+.history-panel {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  color: var(--text-secondary);
+}
+
+.history-panel strong {
+  color: var(--text-primary);
+}
+
+.reset-history-btn {
+  margin-left: auto;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  background: var(--bg-button);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.reset-history-btn:hover {
+  background: var(--bg-button-hover);
+}
+
+.reset-history-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
 .modal {
   display: none;
   position: fixed;

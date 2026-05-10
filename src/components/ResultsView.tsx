@@ -1,9 +1,11 @@
 import { QuizConfig } from "../models/quizConfig";
+import { QuizMode } from "../services/quizInit";
 import { QuizState } from "../state/quizState";
 
 interface ResultsViewProps {
   config: QuizConfig;
   state: QuizState;
+  mode: QuizMode;
   onRestart: () => void;
   onRetryWrong: () => void;
   onStartOver: () => void;
@@ -12,26 +14,34 @@ interface ResultsViewProps {
 export function ResultsView({
   config,
   state,
+  mode,
   onRestart,
   onRetryWrong,
   onStartOver,
 }: ResultsViewProps) {
   let totalScore = 0;
-  const categoryResults = Object.entries(config.categories).map(
-    ([categoryName, categoryConfig]) => {
+  const categoryResults = Object.keys(state.categoryScores).map(
+    (categoryName) => {
+      const questionsCount = state.questionCategories.filter(
+        (category) => category === categoryName,
+      ).length;
+      const categoryConfig = config.categories[categoryName] || {
+        questionsCount,
+        passingThreshold: 0,
+      };
       const score = state.categoryScores[categoryName] || 0;
-      const passed = score >= categoryConfig.passingThreshold;
+      const passed = mode === "random" ? score >= categoryConfig.passingThreshold : true;
       if (passed) totalScore += score;
 
       return {
         categoryName,
-        questionsCount: categoryConfig.questionsCount,
+        questionsCount,
         score,
         passed,
       };
     },
   );
-  const totalPassed = totalScore >= config.totalPassingThreshold;
+  const totalPassed = mode === "random" ? totalScore >= config.totalPassingThreshold : true;
 
   const wrongAnswers = state.answers.filter((a) => !a.correct);
   const hasWrongAnswers = wrongAnswers.length > 0;
@@ -54,14 +64,18 @@ export function ResultsView({
               <td>
                 {result.score}/{result.questionsCount}
               </td>
-              <td>{result.passed ? "Y" : "N"}</td>
+              <td>{mode === "random" ? (result.passed ? "Y" : "N") : "-"}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p class="total">
-        Total: {totalScore} points - {totalPassed ? "PASSED!" : "FAILED"}
-      </p>
+      {mode === "random" ? (
+        <p class="total">
+          Total: {totalScore} points - {totalPassed ? "PASSED!" : "FAILED"}
+        </p>
+      ) : (
+        <p class="total">Total: {totalScore}/{state.questions.length} correct</p>
+      )}
 
       <h3>Summary</h3>
       <div class="summary-list">

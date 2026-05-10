@@ -6,6 +6,10 @@ export function getCategoryForQuestion(
   state: QuizState,
   questionIndex: number,
 ): string {
+  if (state.questionCategories[questionIndex]) {
+    return state.questionCategories[questionIndex];
+  }
+
   let questionCount = 0;
   for (const [categoryName, categoryConfig] of Object.entries(
     config.categories,
