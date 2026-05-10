@@ -2,12 +2,14 @@ export interface AppSettings {
   autoContinue: boolean;
   autoContinueForWrongAnswers: boolean;
   confirmBeforeSubmitting: boolean;
+  theme: "light" | "dark";
 }
 
 export const defaultSettings: AppSettings = {
   autoContinue: true,
   autoContinueForWrongAnswers: false,
   confirmBeforeSubmitting: false,
+  theme: "light",
 };
 
 export function loadSettings(): AppSettings {
@@ -20,4 +22,8 @@ export function loadSettings(): AppSettings {
 
 export function saveSettings(settings: AppSettings): void {
   localStorage.setItem("quizSettings", JSON.stringify(settings));
+}
+
+export function applyTheme(theme: "light" | "dark"): void {
+  document.documentElement.setAttribute("data-theme", theme);
 }
