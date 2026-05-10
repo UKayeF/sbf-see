@@ -1,5 +1,7 @@
+import { useState } from "preact/hooks";
 import { QuizMode } from "../services/quizInit";
 import { getHistorySummary, QuestionHistory } from "../utils/questionHistory";
+import { QuestionInsights } from "./QuestionInsights";
 
 interface MainMenuProps {
   history: QuestionHistory;
@@ -14,6 +16,7 @@ export function MainMenu({
   onStartQuiz,
   onResetHistory,
 }: MainMenuProps) {
+  const [showInsights, setShowInsights] = useState(false);
   const summary = getHistorySummary(history);
   const newQuestions = Math.max(totalQuestions - summary.trackedQuestions, 0);
   const hardPoolSize = newQuestions + summary.strugglingQuestions;
@@ -53,7 +56,17 @@ export function MainMenu({
         >
           Reset My Data
         </button>
+        <button
+          type="button"
+          class="insights-toggle-btn"
+          disabled={summary.trackedQuestions === 0}
+          onClick={() => setShowInsights((current) => !current)}
+        >
+          {showInsights ? "Hide Insights" : "Show Insights"}
+        </button>
       </div>
+
+      {showInsights && <QuestionInsights history={history} />}
     </main>
   );
 }
