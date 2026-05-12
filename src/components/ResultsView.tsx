@@ -77,6 +77,20 @@ export function ResultsView({
         <p class="total">Total: {totalScore}/{state.questions.length} correct</p>
       )}
 
+      <div class="result-buttons">
+        <button id="restart-btn" type="button" onClick={onRestart}>
+          Restart Same Quiz
+        </button>
+        {hasWrongAnswers && (
+          <button id="retry-wrong-btn" type="button" onClick={onRetryWrong}>
+            Retry Wrong Answers ({wrongAnswers.length})
+          </button>
+        )}
+        <button id="start-over-btn" type="button" onClick={onStartOver}>
+          Start New Quiz
+        </button>
+      </div>
+
       <h3>Summary</h3>
       <div class="summary-list">
         {state.answers.map((answer, index) => {
@@ -114,20 +128,6 @@ export function ResultsView({
             </div>
           );
         })}
-      </div>
-
-      <div class="result-buttons">
-        <button id="restart-btn" type="button" onClick={onRestart}>
-          Restart Same Quiz
-        </button>
-        {hasWrongAnswers && (
-          <button id="retry-wrong-btn" type="button" onClick={onRetryWrong}>
-            Retry Wrong Answers ({wrongAnswers.length})
-          </button>
-        )}
-        <button id="start-over-btn" type="button" onClick={onStartOver}>
-          Start New Quiz
-        </button>
       </div>
     </>
   );

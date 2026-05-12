@@ -1,22 +1,22 @@
-import { useEffect } from "preact/hooks";
-import { AppSettings, loadSettings } from "../utils/settings";
+import { useEffect, useState } from "preact/hooks";
+import { loadSettings, saveSettings, AppSettings } from "../utils/settings";
 
 interface HeaderProps {
   onOpenSettings: () => void;
 }
 
 export function Header({ onOpenSettings }: HeaderProps) {
-  const settings = loadSettings();
+  const [settings, setSettings] = useState<AppSettings>(() => loadSettings());
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", settings.theme);
-  }, []);
+  }, [settings.theme]);
 
   const toggleTheme = () => {
     const newTheme = settings.theme === "light" ? "dark" : "light";
     const newSettings: AppSettings = { ...settings, theme: newTheme };
-    localStorage.setItem("quizSettings", JSON.stringify(newSettings));
-    document.documentElement.setAttribute("data-theme", newTheme);
+    saveSettings(newSettings);
+    setSettings(newSettings);
   };
 
   return (

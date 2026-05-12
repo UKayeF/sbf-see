@@ -319,6 +319,32 @@ body {
   }
 }
 
+.question-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.question-header h2 {
+  margin: 0;
+}
+
+#back-btn {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#back-btn:hover {
+  background: var(--bg-input);
+  color: var(--text-primary);
+}
+
 .question {
   font-size: 1.1rem;
   font-weight: 600;

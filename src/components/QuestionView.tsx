@@ -12,6 +12,7 @@ interface QuestionViewProps {
   onAnswerSelect: (index: number) => void;
   onSubmit: () => void;
   onNext: () => void;
+  onBackToMenu: () => void;
 }
 
 export function QuestionView({
@@ -23,6 +24,7 @@ export function QuestionView({
   onAnswerSelect,
   onSubmit,
   onNext,
+  onBackToMenu,
 }: QuestionViewProps) {
   const question = state.questions[state.currentQuestionIndex];
   const categoryIndex = getCategoryQuestionIndex(
@@ -41,10 +43,15 @@ export function QuestionView({
 
   return (
     <>
-      <h2>
-        {state.currentCategory} ({categoryIndex + 1}/
-        {questionsCount})
-      </h2>
+      <div class="question-header">
+        <button id="back-btn" type="button" onClick={onBackToMenu}>
+          ← Back to Menu
+        </button>
+        <h2>
+          {state.currentCategory} ({categoryIndex + 1}/
+          {questionsCount})
+        </h2>
+      </div>
       <p class="question">{question.question}</p>
 
       {question.images?.map((image) => (

@@ -268,6 +268,7 @@ export function App() {
           onAnswerSelect={handleAnswerSelect}
           onSubmit={handleSubmitPendingAnswer}
           onNext={nextQuestion}
+          onBackToMenu={startOver}
         />
       )}
       {isSettingsOpen && (
